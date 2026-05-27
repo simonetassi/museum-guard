@@ -10,8 +10,9 @@
     "@node-wot/binding-coap": "latest",
     "@node-wot/binding-http": "latest",
     "@node-wot/core": "latest",
+    "coap": "^1.5.0",
     "dotenv": "^17.4.2",
-    "axios": "latest"
+    "pino": "^10.3.1"
   },
   "devDependencies": {
     "@types/node": "latest",
