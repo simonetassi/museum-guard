@@ -19,6 +19,23 @@ services:
         target: /var/lib/influxdb3/data
     restart: unless-stopped
 
+  grafana:
+    image: grafana/grafana
+    container_name: museumguard-grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - influxdb
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - '3000:3000'
+
 secrets:
   admin-token:
     file: ./admin-token.json
+
+volumes:
+  grafana_data:
