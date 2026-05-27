@@ -1,0 +1,21 @@
+{
+  "name": "controller",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@node-wot/binding-coap": "latest",
+    "@node-wot/binding-http": "latest",
+    "@node-wot/core": "latest",
+    "axios": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "nodemon": "latest",
+    "ts-node": "latest",
+    "typescript": "latest"
+  }
+}
