@@ -10,6 +10,7 @@
     "@node-wot/binding-coap": "latest",
     "@node-wot/binding-http": "latest",
     "@node-wot/core": "latest",
+    "dotenv": "^17.4.2",
     "axios": "latest"
   },
   "devDependencies": {
