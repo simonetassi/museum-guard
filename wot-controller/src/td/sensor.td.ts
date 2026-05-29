@@ -11,26 +11,18 @@ export const SENSOR_TD: Record<string, unknown> = {
       type: "number",
       unit: "lux",
       readOnly: true,
-      observable: true,
       description: "Current ambient light intensity",
     },
-    accelerationX: {
-      type: "number",
+    acceleration: {
+      type: "object",
       unit: "m/s2",
       readOnly: true,
-      observable: true,
-    },
-    accelerationY: {
-      type: "number",
-      unit: "m/s2",
-      readOnly: true,
-      observable: true,
-    },
-    accelerationZ: {
-      type: "number",
-      unit: "m/s2",
-      readOnly: true,
-      observable: true,
+      description: "Current acceleration on the X/Y/Z axes",
+      properties: {
+        x: { type: "number" },
+        y: { type: "number" },
+        z: { type: "number" },
+      },
     },
   },
 
