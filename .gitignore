@@ -1,3 +1,6 @@
+esp-act-sim/
+esp-sen-sim/
+
 .influxdb3/
 .env
 admin-token.json
