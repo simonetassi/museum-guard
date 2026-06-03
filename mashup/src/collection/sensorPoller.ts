@@ -1,5 +1,5 @@
 import { CONFIG } from "../config";
-import { writeAcceleration, writeLightMeasurement } from "../storage/influxWriter";
+import { writeAcceleration, writeFixedLedState, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
 import { getActuator, getSensor } from "../wot/consumer";
 import pino from "pino";
 
@@ -27,12 +27,14 @@ export function startSensorPoller(): void {
     if (lux !== null) {
       try {
         const fixedLedStateRaw = await getActuator().readProperty("fixedLedState");
-        const fixedLedState = await fixedLedStateRaw.value();
+        const fixedLedState = await fixedLedStateRaw.value() as string;
+        await writeFixedLedState(fixedLedState);
 
         if (fixedLedState === "off"){
           const deficit = TARGET_LUX - lux;
           const intensity = Math.round(Math.max(MIN_INTENSITY, Math.min(MAX_INTENSITY, (deficit / TARGET_LUX) * 100)));
           await getActuator().invokeAction("setLightingIntensity", intensity);
+          await writeLightingIntensity(intensity);
           log.info({ lux, intensity }, "lighting intensity adjusted");
         }
       } catch (err) {
