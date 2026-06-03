@@ -4,6 +4,7 @@ import { HttpClientFactory } from "@node-wot/binding-http";
 import { closeInfluxWriter, initInflux } from "./storage/influxWriter";
 import { startSensorPoller, stopSensorPoller } from "./collection/sensorPoller";
 import pino from "pino";
+import { startEventHandler, stopEventHandler } from "./control/eventHandler";
 
 const log = pino({ name: "sensorPoller" });
 
@@ -20,10 +21,12 @@ async function main(): Promise<void> {
   log.info("InfluxDB writer initialized");
   
   startSensorPoller();
+  startEventHandler();
 
   process.on("SIGINT", async () => {
     log.info("Shutting down...");
     stopSensorPoller();
+    stopEventHandler();
     closeInfluxWriter();
     await servient.shutdown();
     log.info("Shutdown complete");
