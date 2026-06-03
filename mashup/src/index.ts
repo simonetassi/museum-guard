@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   log.info("InfluxDB writer initialized");
   
   startSensorPoller();
-  startEventHandler();
+  await startEventHandler();
 
   process.on("SIGINT", async () => {
     log.info("Shutting down...");
