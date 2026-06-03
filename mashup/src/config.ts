@@ -4,6 +4,9 @@ export const CONFIG = {
   sensor: {
     tdUrl: process.env.SENSOR_TD_URL ?? 'http://localhost:8080/museumguard-sensor'
   },
+  actuator: {
+    tdUrl: process.env.ACTUATOR_TD_URL ?? 'http://localhost:8080/museumguard-actuator'
+  },
   influxdb: {
     url: process.env.INFLUX_URL ?? "http://localhost:8181",
     token: process.env.INFLUX_TOKEN ?? "token",
