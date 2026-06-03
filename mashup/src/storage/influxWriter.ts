@@ -1,10 +1,6 @@
+import { EventType } from "../common/types";
 import { CONFIG } from "../config"
 import {InfluxDBClient, Point} from "@influxdata/influxdb3-client"
-
-enum EventType {
-  IMPACT = "impact",
-  THEFT = "theft",
-}
 
 let client: InfluxDBClient;
 
