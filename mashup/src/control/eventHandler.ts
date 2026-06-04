@@ -11,10 +11,10 @@ let theftSub: WoT.Subscription;
 
 export async function startEventHandler(): Promise<void> {
   impactSub = await getSensor().subscribeEvent("impactDetected", async (data) => {
-    const { value } = await data.value() as { value: number; timestamp: string };
+    const { value, timestamp } = await data.value() as { value: number; timestamp: string };
     log.info({ value }, "impactDetected event received");
 
-    await writeEvent(EventType.IMPACT, value).catch((err) => 
+    await writeEvent(EventType.IMPACT, value, new Date(timestamp)).catch((err) =>
       log.error(err, "failed to write impact event to InfluxDB"),
     );
 
@@ -24,10 +24,10 @@ export async function startEventHandler(): Promise<void> {
   });
 
   theftSub = await getSensor().subscribeEvent("theftDetected", async (data) => {
-    const { value } = await data.value() as { value: number; timestamp: string };
+    const { value, timestamp } = await data.value() as { value: number; timestamp: string };
     log.info({ value }, "theftDetected event recieved");
 
-    await writeEvent(EventType.THEFT, value).catch((err) => 
+    await writeEvent(EventType.THEFT, value, new Date(timestamp)).catch((err) =>
       log.error(err, "failed to write theft event to InfluxDB"),
     );
 

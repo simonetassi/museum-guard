@@ -23,8 +23,8 @@ function coapGet(pathname: string): Promise<Buffer> {
 export async function readAmbientLight(): Promise<AmbientLightReading> {
   try {
     const payload = await coapGet(CONFIG.espSen.resources.ambientLight);
-    const { lux } = JSON.parse(payload.toString()) as { lux: number };
-    return { lux, timestamp: new Date().toISOString() };
+    const { lux, timestamp } = JSON.parse(payload.toString()) as { lux: number; timestamp: string };
+    return { lux, timestamp };
   } catch (err) {
     log.error({ err }, "Failed to read ambient light");
     throw err;
@@ -34,12 +34,13 @@ export async function readAmbientLight(): Promise<AmbientLightReading> {
 export async function readAcceleration(): Promise<AccelerationReading> {
   try {
     const payload = await coapGet(CONFIG.espSen.resources.acceleration);
-    const { x, y, z } = JSON.parse(payload.toString()) as {
+    const { x, y, z, timestamp } = JSON.parse(payload.toString()) as {
       x: number;
       y: number;
       z: number;
+      timestamp: string;
     };
-    return { x, y, z, timestamp: new Date().toISOString() };
+    return { x, y, z, timestamp };
   } catch (err) {
     log.error({ err }, "Failed to read acceleration");
     throw err;
@@ -64,8 +65,8 @@ function startObserve(
     stream = res as ObserveReadStream;
     stream.on("data", (chunk: Buffer) => {
       try {
-        const { value } = JSON.parse(chunk.toString()) as { value: number };
-        callback({ type, value, timestamp: new Date().toISOString() });
+        const { value, timestamp } = JSON.parse(chunk.toString()) as { value: number; timestamp: string };
+        callback({ type, value, timestamp });
       } catch (err) {
         log.error({ err }, `Failed to parse ${type} event payload`);
       }

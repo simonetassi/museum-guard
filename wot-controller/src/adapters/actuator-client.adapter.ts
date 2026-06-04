@@ -21,10 +21,8 @@ function handleError(err: unknown, message: string): never {
 
 export async function getActuatorState(): Promise<ActuatorState> {
   try {
-    const { data } = await http.get<Omit<ActuatorState, "timestamp">>(
-      CONFIG.espAct.endpoints.getState
-    );
-    return { ...data, timestamp: new Date().toISOString() };
+    const { data } = await http.get<ActuatorState>(CONFIG.espAct.endpoints.getState);
+    return data;
   } catch (err) {
     handleError(err, "Failed to get actuator state");
   }

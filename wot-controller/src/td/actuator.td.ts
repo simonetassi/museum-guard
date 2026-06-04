@@ -8,19 +8,24 @@ export const ACTUATOR_TD: Record<string, unknown> = {
 
   properties: {
     variableLedIntensity: {
-      type: "integer",
-      minimum: 0,
-      maximum: 100,
+      type: "object",
       readOnly: false,
       observable: true,
-      description: "Current artwork illumination intensity (0-100)",
+      description: "Current artwork illumination intensity with timestamp",
+      properties: {
+        value: { type: "integer", minimum: 0, maximum: 100 },
+        timestamp: { type: "string", format: "date-time" },
+      },
     },
     fixedLedState: {
-      type: "string",
-      enum: ["off", "blinking", "on"],
+      type: "object",
       readOnly: true,
       observable: true,
-      description: "Current state of the fixed alarm LED",
+      description: "Current state of the fixed alarm LED with timestamp",
+      properties: {
+        value: { type: "string", enum: ["off", "blinking", "on"] },
+        timestamp: { type: "string", format: "date-time" },
+      },
     },
   },
 
