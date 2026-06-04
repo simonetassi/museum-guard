@@ -17,20 +17,30 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
   const thing = await wot.produce(ACTUATOR_TD as WoT.ExposedThingInit);
 
   let variableLedIntensity = 0;
+  let variableLedTimestamp = new Date().toISOString();
   let fixedLedState: FixedLedState = FixedLedState.Off;
+  let fixedLedTimestamp = new Date().toISOString();
 
   const setFixedLedState = (s: FixedLedState) => {
     fixedLedState = s;
+    fixedLedTimestamp = new Date().toISOString();
     thing.emitPropertyChange("fixedLedState");
   };
 
   const setVariableLedIntensity = (v: number) => {
     variableLedIntensity = v;
+    variableLedTimestamp = new Date().toISOString();
     thing.emitPropertyChange("variableLedIntensity");
   };
 
-  thing.setPropertyReadHandler("variableLedIntensity", async () => variableLedIntensity);
-  thing.setPropertyReadHandler("fixedLedState", async () => fixedLedState);
+  thing.setPropertyReadHandler("variableLedIntensity", async () => ({
+    value: variableLedIntensity,
+    timestamp: variableLedTimestamp,
+  }));
+  thing.setPropertyReadHandler("fixedLedState", async () => ({
+    value: fixedLedState,
+    timestamp: fixedLedTimestamp,
+  }));
 
   thing.setActionHandler("setLightingIntensity", async (params) => {
     const intensity = await params.value() as number;

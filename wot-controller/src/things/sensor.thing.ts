@@ -18,12 +18,12 @@ export async function produceSensorThing(wot: typeof WoT): Promise<WoT.ExposedTh
 
   thing.setPropertyReadHandler("ambientLight", async () => {
     const light = await readAmbientLight();
-    return light.lux;
+    return { value: light.lux, timestamp: light.timestamp };
   });
 
   thing.setPropertyReadHandler("acceleration", async () => {
     const accel = await readAcceleration();
-    return { x: accel.x, y: accel.y, z: accel.z };
+    return { x: accel.x, y: accel.y, z: accel.z, timestamp: accel.timestamp };
   });
 
   cancelObserveImpact = startObserveImpact((event) => {
