@@ -8,20 +8,23 @@ export const SENSOR_TD: Record<string, unknown> = {
 
   properties: {
     ambientLight: {
-      type: "number",
-      unit: "lux",
+      type: "object",
       readOnly: true,
-      description: "Current ambient light intensity",
+      description: "Current ambient light intensity with device timestamp",
+      properties: {
+        value: { type: "number", unit: "lux" },
+        timestamp: { type: "string", format: "date-time" },
+      },
     },
     acceleration: {
       type: "object",
-      unit: "m/s2",
       readOnly: true,
-      description: "Current acceleration on the X/Y/Z axes",
+      description: "Current acceleration on the X/Y/Z axes with device timestamp",
       properties: {
-        x: { type: "number" },
-        y: { type: "number" },
-        z: { type: "number" },
+        x: { type: "number", unit: "m/s2" },
+        y: { type: "number", unit: "m/s2" },
+        z: { type: "number", unit: "m/s2" },
+        timestamp: { type: "string", format: "date-time" },
       },
     },
   },
