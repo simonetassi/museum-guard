@@ -11,7 +11,7 @@ let theftSub: WoT.Subscription;
 
 export async function startEventHandler(): Promise<void> {
   impactSub = await getSensor().subscribeEvent("impactDetected", async (data) => {
-    const value = await data.value() as number;
+    const { value } = await data.value() as { value: number; timestamp: string };
     log.info({ value }, "impactDetected event received");
 
     await writeEvent(EventType.IMPACT, value).catch((err) => 
@@ -24,7 +24,7 @@ export async function startEventHandler(): Promise<void> {
   });
 
   theftSub = await getSensor().subscribeEvent("theftDetected", async (data) => {
-    const value = await data.value() as number;
+    const { value } = await data.value() as { value: number; timestamp: string };
     log.info({ value }, "theftDetected event recieved");
 
     await writeEvent(EventType.THEFT, value).catch((err) => 
