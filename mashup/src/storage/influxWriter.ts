@@ -1,10 +1,6 @@
+import { EventType } from "../common/types";
 import { CONFIG } from "../config"
 import {InfluxDBClient, Point} from "@influxdata/influxdb3-client"
-
-enum EventType {
-  IMPACT = "impact",
-  THEFT = "theft",
-}
 
 let client: InfluxDBClient;
 
@@ -42,6 +38,20 @@ export async function writeEvent(type: EventType, value: number): Promise<void> 
 
   await client.write(point);
 }
+
+export async function writeLightingIntensity(intensity: number): Promise<void> {
+  const point = Point.measurement("lighting_intensity") 
+    .setTag("node", "esp-act")
+    .setIntegerField("intensity", intensity);
+  await client.write(point);
+}
+
+export async function writeFixedLedState(fixedLedState: string): Promise<void> {
+  const point = Point.measurement("fixed_led_state")
+    .setTag("node", "esp-act")
+    .setStringField("state", fixedLedState);
+  await client.write(point);
+} 
 
 export function closeInfluxWriter(): void {
   client.close();
