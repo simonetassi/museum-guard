@@ -12,46 +12,51 @@ export function initInflux(): void {
   })
 }
 
-export async function writeLightMeasurement(lux: number): Promise<void> {
+export async function writeLightMeasurement(lux: number, timestamp: Date): Promise<void> {
   const point = Point.measurement("ambient_light")
     .setTag("node", "esp-sen")
-    .setFloatField("lux", lux);
+    .setFloatField("lux", lux)
+    .setTimestamp(timestamp);
 
   await client.write(point);
 }
 
-export async function writeAcceleration(x: number, y: number, z: number): Promise<void> {
+export async function writeAcceleration(x: number, y: number, z: number, timestamp: Date): Promise<void> {
   const point = Point.measurement("acceleration")
     .setTag("node", "esp-sen")
     .setFloatField("x", x)
     .setFloatField("y", y)
-    .setFloatField("z", z);
+    .setFloatField("z", z)
+    .setTimestamp(timestamp);
 
   await client.write(point);
 }
 
-export async function writeEvent(type: EventType, value: number): Promise<void> {
-  const measurement = type === EventType.IMPACT ? "impact_event" :  "theft_event";
-  const point = Point.measurement(measurement) 
+export async function writeEvent(type: EventType, value: number, timestamp: Date): Promise<void> {
+  const measurement = type === EventType.IMPACT ? "impact_event" : "theft_event";
+  const point = Point.measurement(measurement)
     .setTag("node", "esp-sen")
-    .setFloatField("value", value);
+    .setFloatField("value", value)
+    .setTimestamp(timestamp);
 
   await client.write(point);
 }
 
-export async function writeLightingIntensity(intensity: number): Promise<void> {
-  const point = Point.measurement("lighting_intensity") 
+export async function writeLightingIntensity(intensity: number, timestamp: Date): Promise<void> {
+  const point = Point.measurement("lighting_intensity")
     .setTag("node", "esp-act")
-    .setIntegerField("intensity", intensity);
+    .setIntegerField("intensity", intensity)
+    .setTimestamp(timestamp);
   await client.write(point);
 }
 
-export async function writeFixedLedState(fixedLedState: string): Promise<void> {
+export async function writeFixedLedState(fixedLedState: string, timestamp: Date): Promise<void> {
   const point = Point.measurement("fixed_led_state")
     .setTag("node", "esp-act")
-    .setStringField("state", fixedLedState);
+    .setStringField("state", fixedLedState)
+    .setTimestamp(timestamp);
   await client.write(point);
-} 
+}
 
 export function closeInfluxWriter(): void {
   client.close();
