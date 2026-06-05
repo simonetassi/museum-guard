@@ -27,6 +27,18 @@ export const SENSOR_TD: Record<string, unknown> = {
         timestamp: { type: "string", format: "date-time" },
       },
     },
+    impactThreshold: {
+      type: "number",
+      unit: "m/s2",
+      readOnly: false,
+      description: "Acceleration threshold for impact event detection",
+    },
+    theftThreshold: {
+      type: "number",
+      unit: "m/s2",
+      readOnly: false,
+      description: "Acceleration threshold for theft event detection",
+    },
   },
 
   events: {
