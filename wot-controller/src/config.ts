@@ -14,6 +14,8 @@ export const CONFIG = {
       acceleration: process.env.ESP_SEN_RES_ACCELERATION || "/sensor/acceleration",
       impactEvent: process.env.ESP_SEN_RES_IMPACT_EVENT || "/events/impact",
       theftEvent: process.env.ESP_SEN_RES_THEFT_EVENT || "/events/theft",
+      impactThreshold: process.env.ESP_SEN_RES_IMPACT_THRESHOLD || "/config/impact-threshold",
+      theftThreshold: process.env.ESP_SEN_RES_THEFT_THRESHOLD || "/config/theft-threshold",
     },
   },
 
