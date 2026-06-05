@@ -5,6 +5,10 @@ import {
   readAcceleration,
   startObserveImpact,
   startObserveTheft,
+  readImpactThreshold,
+  writeImpactThreshold,
+  readTheftThreshold,
+  writeTheftThreshold,
 } from "../adapters/sensor-client.adapter";
 import { SENSOR_TD } from "../td/sensor.td";
 
@@ -24,6 +28,16 @@ export async function produceSensorThing(wot: typeof WoT): Promise<WoT.ExposedTh
   thing.setPropertyReadHandler("acceleration", async () => {
     const accel = await readAcceleration();
     return { x: accel.x, y: accel.y, z: accel.z, timestamp: accel.timestamp };
+  });
+
+  thing.setPropertyReadHandler("impactThreshold", async () => readImpactThreshold());
+  thing.setPropertyWriteHandler("impactThreshold", async (value) => {
+    await writeImpactThreshold(await value.value() as number);
+  });
+
+  thing.setPropertyReadHandler("theftThreshold", async () => readTheftThreshold());
+  thing.setPropertyWriteHandler("theftThreshold", async (value) => {
+    await writeTheftThreshold(await value.value() as number);
   });
 
   cancelObserveImpact = startObserveImpact((event) => {
