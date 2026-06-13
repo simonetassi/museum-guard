@@ -1,4 +1,4 @@
-idf_component_register(SRCS "wifi_sta.c" "time_sync.c" "actuator.c" "main.c"
+idf_component_register(SRCS "http_server.c" "wifi_sta.c" "time_sync.c" "actuator.c" "main.c"
                        INCLUDE_DIRS "."
                        PRIV_REQUIRES esp_driver_gpio esp_driver_ledc esp_timer
                                      esp_http_server json
