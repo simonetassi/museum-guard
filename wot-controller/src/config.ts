@@ -30,8 +30,4 @@ export const CONFIG = {
       getState: process.env.ESP_ACT_EP_GET_STATE || "/actuator/state",
     },
   },
-
-  alarms: {
-    blinkDurationMs: Number(process.env.ALARMS_BLINK_DURATION_MS) || 20000,
-  },
 };

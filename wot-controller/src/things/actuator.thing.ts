@@ -1,13 +1,9 @@
 import * as WoT from "wot-typescript-definitions";
 import pino from "pino";
-import { CONFIG } from "../config";
 import { ACTUATOR_TD } from "../td/actuator.td";
-import { activateAlarm, resetAlarms, setIntensity, startBlink } from "../adapters/actuator-client.adapter";
-import { FixedLedState } from "../interfaces";
+import { activateAlarm, getActuatorState, resetAlarms, setIntensity, startBlink } from "../adapters/actuator-client.adapter";
 
 const log = pino({ name: "actuatorThing" });
-
-let blinkTimer: NodeJS.Timeout | null = null;
 
 // to avoid always returning undefined (as required by WoT.ActionHandler )
 const action = (fn: () => Promise<void>): WoT.ActionHandler =>
@@ -18,14 +14,6 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
 
   let variableLedIntensity = 0;
   let variableLedTimestamp = new Date().toISOString();
-  let fixedLedState: FixedLedState = FixedLedState.Off;
-  let fixedLedTimestamp = new Date().toISOString();
-
-  const setFixedLedState = (s: FixedLedState) => {
-    fixedLedState = s;
-    fixedLedTimestamp = new Date().toISOString();
-    thing.emitPropertyChange("fixedLedState");
-  };
 
   const setVariableLedIntensity = (v: number) => {
     variableLedIntensity = v;
@@ -37,10 +25,15 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
     value: variableLedIntensity,
     timestamp: variableLedTimestamp,
   }));
-  thing.setPropertyReadHandler("fixedLedState", async () => ({
-    value: fixedLedState,
-    timestamp: fixedLedTimestamp,
-  }));
+
+  // The fixed alarm LED is owned by the device: the firmware times the impact
+  // blink and auto-resets itself after the blink duration. Proxy the device state
+  // so the controller always reflects reality (single source of truth) rather than
+  // tracking a duplicate timer.
+  thing.setPropertyReadHandler("fixedLedState", async () => {
+    const state = await getActuatorState();
+    return { value: state.fixedLedState, timestamp: state.timestamp };
+  });
 
   thing.setActionHandler("setLightingIntensity", async (params) => {
     const intensity = await params.value() as number;
@@ -51,49 +44,22 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
 
   thing.setActionHandler("triggerImpactAlarm", action(async () => {
     await startBlink();
-    setFixedLedState(FixedLedState.Blinking);
-    log.warn("Impact alarm started — blink for %dms", CONFIG.alarms.blinkDurationMs);
-
-    if (blinkTimer !== null) clearTimeout(blinkTimer);
-    blinkTimer = setTimeout(async () => {
-      blinkTimer = null;
-      try {
-        await resetAlarms();
-      } catch (err) {
-        log.error({ err }, "Failed to auto-reset blink alarm on device");
-      }
-      setFixedLedState(FixedLedState.Off);
-      log.info("Blink alarm expired — LED off");
-    }, CONFIG.alarms.blinkDurationMs);
+    thing.emitPropertyChange("fixedLedState");
+    log.warn("Impact alarm started — device blinks fixed LED and auto-resets");
   }));
 
   thing.setActionHandler("triggerTheftAlarm", action(async () => {
-    if (blinkTimer !== null) {
-      clearTimeout(blinkTimer);
-      blinkTimer = null;
-    }
     await activateAlarm();
-    setFixedLedState(FixedLedState.On);
+    thing.emitPropertyChange("fixedLedState");
     log.warn("Theft alarm activated — LED latched on");
   }));
 
   thing.setActionHandler("resetAlarms", action(async () => {
     await resetAlarms();
-    if (blinkTimer !== null) {
-      clearTimeout(blinkTimer);
-      blinkTimer = null;
-    }
-    setFixedLedState(FixedLedState.Off);
+    thing.emitPropertyChange("fixedLedState");
     log.info("All alarms reset");
   }));
 
   await thing.expose();
   return thing;
-}
-
-export function stopActuatorThing(): void {
-  if (blinkTimer !== null) {
-    clearTimeout(blinkTimer);
-    blinkTimer = null;
-  }
 }
