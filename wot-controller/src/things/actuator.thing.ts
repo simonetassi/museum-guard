@@ -26,10 +26,6 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
     timestamp: variableLedTimestamp,
   }));
 
-  // The fixed alarm LED is owned by the device: the firmware times the impact
-  // blink and auto-resets itself after the blink duration. Proxy the device state
-  // so the controller always reflects reality (single source of truth) rather than
-  // tracking a duplicate timer.
   thing.setPropertyReadHandler("fixedLedState", async () => {
     const state = await getActuatorState();
     return { value: state.fixedLedState, timestamp: state.timestamp };
@@ -45,13 +41,13 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
   thing.setActionHandler("triggerImpactAlarm", action(async () => {
     await startBlink();
     thing.emitPropertyChange("fixedLedState");
-    log.warn("Impact alarm started — device blinks fixed LED and auto-resets");
+    log.warn("Impact alarm started");
   }));
 
   thing.setActionHandler("triggerTheftAlarm", action(async () => {
     await activateAlarm();
     thing.emitPropertyChange("fixedLedState");
-    log.warn("Theft alarm activated — LED latched on");
+    log.warn("Theft alarm activated");
   }));
 
   thing.setActionHandler("resetAlarms", action(async () => {
