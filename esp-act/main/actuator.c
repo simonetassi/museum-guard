@@ -104,6 +104,7 @@ static void control_task(void *arg) {
   (void)arg; // drop null arg - avoid compiler warn
   actuator_cmd_t cmd;
   bool blinking = false;
+  bool theft_latched = false;
   bool led_level =  false;
   int64_t blink_deadline_us = 0;
 
@@ -117,6 +118,9 @@ static void control_task(void *arg) {
           break;
 
         case CMD_START_BLINK:
+          if (theft_latched) {
+            break;
+          }
           blinking = true;
           led_level = true;
           blink_deadline_us = esp_timer_get_time() + (int64_t)BLINK_DURATION_MS * 1000;
@@ -127,13 +131,15 @@ static void control_task(void *arg) {
 
         case CMD_ACTIVATE_ALARM:
           blinking = false;
+          theft_latched = true;
           set_fixed_led(true);
           publish_fixed_state(FIXED_LED_ON);
           ESP_LOGW(TAG, "Theft: fixed LED ON");
           break;
-        
+
         case CMD_RESET:
           blinking = false;
+          theft_latched = false;
           set_fixed_led(false);
           publish_fixed_state(FIXED_LED_OFF);
           ESP_LOGI(TAG, "Alarms reset: fixed LED OFF");
