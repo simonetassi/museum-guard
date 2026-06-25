@@ -1,5 +1,5 @@
 import { CONFIG } from "../config";
-import { writeAcceleration, writeFixedLedState, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
+import { writeAcceleration, writeFixedLedState, writeForecast, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
 import { getActuator, getSensor } from "../wot/consumer";
 import { getPredictedLux } from "../forecast/forecastClient";
 import pino from "pino";
@@ -36,7 +36,11 @@ export function startSensorPoller(): void {
           let controlLux = lux;
           if (CONFIG.forecast.enabled) {
             const predicted = await getPredictedLux(CONFIG.forecast.horizonS);
-            if (predicted !== null) controlLux = predicted;
+            if (predicted !== null) {
+              controlLux = predicted;
+              const targetTs = new Date(Date.now() + CONFIG.forecast.horizonS * 1000);
+              await writeForecast(predicted, targetTs);
+            }
           }
           const deficit = TARGET_LUX - controlLux;
           const intensity = Math.round(Math.max(MIN_INTENSITY, Math.min(MAX_INTENSITY, (deficit / TARGET_LUX) * 100)));
