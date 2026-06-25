@@ -21,6 +21,15 @@ export async function writeLightMeasurement(lux: number, timestamp: Date): Promi
   await client.write(point);
 }
 
+export async function writeForecast(lux: number, timestamp: Date): Promise<void> {
+  const point = Point.measurement("ambient_light_forecast")
+    .setTag("node", "esp-sen")
+    .setFloatField("lux", lux)
+    .setTimestamp(timestamp);
+
+  await client.write(point);
+}
+
 export async function writeAcceleration(x: number, y: number, z: number, timestamp: Date): Promise<void> {
   const point = Point.measurement("acceleration")
     .setTag("node", "esp-sen")

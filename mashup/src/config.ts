@@ -14,5 +14,10 @@ export const CONFIG = {
   },
   polling: {
     intervalMs: Number(process.env.POLLING_MS ?? 20000)
+  },
+  forecast: {
+    enabled: (process.env.FORECAST_ENABLED ?? "false") === "true",
+    url: process.env.FORECAST_URL ?? "http://localhost:8000",
+    horizonS: Number(process.env.FORECAST_HORIZON_S ?? 60),
   }
 } as const;

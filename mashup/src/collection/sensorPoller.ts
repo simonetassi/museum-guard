@@ -1,6 +1,7 @@
 import { CONFIG } from "../config";
-import { writeAcceleration, writeFixedLedState, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
+import { writeAcceleration, writeFixedLedState, writeForecast, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
 import { getActuator, getSensor } from "../wot/consumer";
+import { getPredictedLux } from "../forecast/forecastClient";
 import pino from "pino";
 
 const log = pino({ name: "sensorPoller" });
@@ -32,11 +33,20 @@ export function startSensorPoller(): void {
         await writeFixedLedState(fixedLedState, new Date(ledTs));
 
         if (fixedLedState === "off") {
-          const deficit = TARGET_LUX - lux;
+          let controlLux = lux;
+          if (CONFIG.forecast.enabled) {
+            const predicted = await getPredictedLux(CONFIG.forecast.horizonS);
+            if (predicted !== null) {
+              controlLux = predicted;
+              const targetTs = new Date(Date.now() + CONFIG.forecast.horizonS * 1000);
+              await writeForecast(predicted, targetTs);
+            }
+          }
+          const deficit = TARGET_LUX - controlLux;
           const intensity = Math.round(Math.max(MIN_INTENSITY, Math.min(MAX_INTENSITY, (deficit / TARGET_LUX) * 100)));
           await getActuator().invokeAction("setLightingIntensity", intensity);
           await writeLightingIntensity(intensity, new Date());
-          log.info({ lux, intensity }, "lighting intensity adjusted");
+          log.info({ lux, controlLux, intensity, predictive: CONFIG.forecast.enabled }, "lighting intensity adjusted");
         }
       } catch (err) {
         log.error(err, "failed to adjust lighting intensity");
