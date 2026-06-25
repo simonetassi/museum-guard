@@ -1,0 +1,229 @@
+{
+  "uid": "museumguard-main",
+  "title": "MuseumGuard Overview",
+  "tags": ["museumguard", "iot", "wot"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Ambient light (lux)",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "lux", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, lux FROM ambient_light WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Lighting intensity (%)",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 15, "lineInterpolation": "stepAfter" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, intensity FROM lighting_intensity WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Acceleration X / Y / Z (m/s²)",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "accMS2", "custom": { "drawStyle": "line", "fillOpacity": 0 } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, x, y, z FROM acceleration WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Theft signal: |Z − g| vs threshold",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "accMS2",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "thresholdsStyle": { "mode": "line" } },
+          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "green" }, { "value": 12, "color": "red" } ] }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, abs(z - 9.80665) AS vertical_deviation FROM acceleration WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Security events",
+      "type": "table",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, 'impact' AS type, value FROM impact_event WHERE $__timeFilter(time) UNION ALL SELECT time, 'theft' AS type, value FROM theft_event WHERE $__timeFilter(time) ORDER BY time DESC",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Fixed LED / alarm state",
+      "type": "state-timeline",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "fillOpacity": 80 },
+          "mappings": [
+            { "type": "value", "options": { "off": { "color": "green", "index": 0 }, "blinking": { "color": "yellow", "index": 1 }, "on": { "color": "red", "index": 2 } } }
+          ]
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, state FROM fixed_led_state WHERE $__timeFilter(time) ORDER BY time",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Impacts (range)",
+      "type": "stat",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 24 },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT count(value) AS impacts FROM impact_event WHERE $__timeFilter(time)",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Thefts (range)",
+      "type": "stat",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 24 },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT count(value) AS thefts FROM theft_event WHERE $__timeFilter(time)",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Latest light",
+      "type": "stat",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 24 },
+      "fieldConfig": { "defaults": { "unit": "lux", "color": { "mode": "thresholds" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT lux FROM ambient_light WHERE $__timeFilter(time) ORDER BY time DESC LIMIT 1",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Current alarm state",
+      "type": "stat",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 24 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "text" },
+          "mappings": [
+            { "type": "value", "options": { "off": { "color": "green" }, "blinking": { "color": "yellow" }, "on": { "color": "red" } } }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^state$/" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT state FROM fixed_led_state ORDER BY time DESC LIMIT 1",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Ambient light: actual vs ARIMA forecast",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "fieldConfig": {
+        "defaults": { "unit": "lux", "custom": { "drawStyle": "line", "fillOpacity": 10 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "forecast" }, "properties": [ { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [10, 10] } }, { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, lux AS actual FROM ambient_light WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, lux AS forecast FROM ambient_light_forecast WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    }
+  ]
+}

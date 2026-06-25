@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: MuseumGuard-InfluxDB
+    uid: museumguard-influxdb
+    type: influxdb
+    access: proxy
+    url: http://museumguard-influxdb:8181
+    isDefault: true
+    editable: true
+    jsonData:
+      version: SQL
+      dbName: museumguard
+      httpMode: POST
+      insecureGrpc: true
+    secureJsonData:
+      token: $INFLUX_TOKEN

@@ -25,11 +25,17 @@ services:
     restart: unless-stopped
     volumes:
       - grafana_data:/var/lib/grafana
+      # Provisioning: datasource + dashboard provider (read on startup).
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      # Dashboard JSON files — path must match provider.yaml `options.path`.
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
     depends_on:
       - influxdb
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
+      # Expanded inside influxdb.yaml datasource provisioning ($INFLUX_TOKEN).
+      INFLUX_TOKEN: ${INFLUX_TOKEN}
     ports:
       - '3000:3000'
 
