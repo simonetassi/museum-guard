@@ -9,8 +9,6 @@ const log = pino({ name: "sensorPoller" });
 let pollingInterval: ReturnType<typeof setInterval>;
 
 const TARGET_LUX = 300;
-const MAX_INTENSITY = 100;
-const MIN_INTENSITY = 0;
 
 export function startSensorPoller(): void {
   pollingInterval = setInterval(async () => {
@@ -45,7 +43,7 @@ export function startSensorPoller(): void {
             }
           }
           const deficit = TARGET_LUX - controlLux;
-          const intensity = Math.round(Math.max(MIN_INTENSITY, Math.min(MAX_INTENSITY, (deficit / TARGET_LUX) * 100)));
+          const intensity = Math.round(Math.max(0, Math.min(100, (deficit / TARGET_LUX) * 100)));
           await getActuator().invokeAction("setLightingIntensity", intensity);
           await writeLightingIntensity(intensity, new Date());
           log.info({ lux, controlLux, intensity, predictive: CONFIG.forecast.enabled }, "lighting intensity adjusted");

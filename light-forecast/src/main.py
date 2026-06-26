@@ -21,7 +21,6 @@ def forecast(horizon_s: int = HORIZON_S):
     try:
         series = fetch_ambient_light(HISTORY_MINUTES)
     except Exception as e:
-        # empty fallback so the mashup keeps going
         log.error(f"influx query failed: {e}")
         return {
             "predicted_lux": 0.0,

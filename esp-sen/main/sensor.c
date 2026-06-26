@@ -236,7 +236,7 @@ esp_err_t sensor_init(void) {
   ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, LIGHT_ADC_CHANNEL, &chan_cfg));
 
   s_state.lux = read_light_lux();
-  ESP_LOGI(TAG, "Ambient light ADC ready (unit%d ch%d) — %.0f lux",
+  ESP_LOGI(TAG, "Ambient light ADC ready (unit%d ch%d) %.0f lux",
            LIGHT_ADC_UNIT + 1, LIGHT_ADC_CHANNEL, s_state.lux);
 
   // MPU6050

@@ -5,7 +5,7 @@ const log = pino({ name: "telegramNotifier" });
 
 export async function notifyTelegram(message: string): Promise<void> {
   if (!CONFIG.telegram.botToken || !CONFIG.telegram.chatId) {
-    log.warn("Telegram bot token or chat id not configured — skipping alert");
+    log.warn("Telegram bot token or chat id not configured, skipping alert");
     return;
   }
 

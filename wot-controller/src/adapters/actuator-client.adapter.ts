@@ -30,7 +30,7 @@ export async function getActuatorState(): Promise<ActuatorState> {
 
 export async function setIntensity(value: number): Promise<void> {
   if (value < 0 || value > 100) {
-    throw new RangeError(`Intensity must be 0–100, got ${value}`);
+    throw new RangeError(`Intensity must be 0-100, got ${value}`);
   }
   try {
     await http.post(CONFIG.espAct.endpoints.setIntensity, { intensity: value });
@@ -41,28 +41,16 @@ export async function setIntensity(value: number): Promise<void> {
 }
 
 export async function startBlink(): Promise<void> {
-  try {
-    await http.post(CONFIG.espAct.endpoints.startBlink, {});
-    log.info("Blink started");
-  } catch (err) {
-    handleError(err, "Failed to start blink");
-  }
+  await http.post(CONFIG.espAct.endpoints.startBlink, {});
+  log.info("impact alarm activated");
+
 }
 
 export async function activateAlarm(): Promise<void> {
-  try {
-    await http.post(CONFIG.espAct.endpoints.activateAlarm, {});
-    log.info("Alarm activated");
-  } catch (err) {
-    handleError(err, "Failed to activate alarm");
-  }
+  await http.post(CONFIG.espAct.endpoints.activateAlarm, {});
+  log.info("theft alarm activated");
 }
 
 export async function resetAlarms(): Promise<void> {
-  try {
-    await http.post(CONFIG.espAct.endpoints.resetAlarms, {});
-    log.info("Alarms reset");
-  } catch (err) {
-    handleError(err, "Failed to reset alarms");
-  }
+  await http.post(CONFIG.espAct.endpoints.resetAlarms, {});
 }

@@ -5,7 +5,7 @@ import { activateAlarm, getActuatorState, resetAlarms, setIntensity, startBlink 
 
 const log = pino({ name: "actuatorThing" });
 
-// to avoid always returning undefined (as required by WoT.ActionHandler )
+// WoT.ActionHandler must resolve to undefined
 const action = (fn: () => Promise<void>): WoT.ActionHandler =>
   async () => { await fn(); return undefined; };
 

@@ -42,30 +42,20 @@ function coapPut(pathname: string, body: object): Promise<void> {
 }
 
 export async function readAmbientLight(): Promise<AmbientLightReading> {
-  try {
-    const payload = await coapGet(CONFIG.espSen.resources.ambientLight);
-    const { lux, timestamp } = JSON.parse(payload.toString()) as { lux: number; timestamp: string };
-    return { lux, timestamp };
-  } catch (err) {
-    log.error({ err }, "Failed to read ambient light");
-    throw err;
-  }
+  const payload = await coapGet(CONFIG.espSen.resources.ambientLight);
+  const { lux, timestamp } = JSON.parse(payload.toString()) as { lux: number; timestamp: string };
+  return { lux, timestamp };
 }
 
 export async function readAcceleration(): Promise<AccelerationReading> {
-  try {
-    const payload = await coapGet(CONFIG.espSen.resources.acceleration);
-    const { x, y, z, timestamp } = JSON.parse(payload.toString()) as {
-      x: number;
-      y: number;
-      z: number;
-      timestamp: string;
-    };
-    return { x, y, z, timestamp };
-  } catch (err) {
-    log.error({ err }, "Failed to read acceleration");
-    throw err;
-  }
+  const payload = await coapGet(CONFIG.espSen.resources.acceleration);
+  const { x, y, z, timestamp } = JSON.parse(payload.toString()) as {
+    x: number;
+    y: number;
+    z: number;
+    timestamp: string;
+  };
+  return { x, y, z, timestamp };
 }
 
 function startObserve(
@@ -121,43 +111,25 @@ export function startObserveTheft(
 }
 
 export async function readImpactThreshold(): Promise<number> {
-  try {
-    const payload = await coapGet(CONFIG.espSen.resources.impactThreshold);
-    const { value } = JSON.parse(payload.toString()) as { value: number };
-    return value;
-  } catch (err) {
-    log.error({ err }, "Failed to read impact threshold");
-    throw err;
-  }
+  const payload = await coapGet(CONFIG.espSen.resources.impactThreshold);
+  return (JSON.parse(payload.toString()) as { value: number }).value;
 }
 
 export async function writeImpactThreshold(value: number): Promise<void> {
-  try {
-    await coapPut(CONFIG.espSen.resources.impactThreshold, { value });
-    log.info({ value }, "Impact threshold updated");
-  } catch (err) {
-    log.error({ err }, "Failed to write impact threshold");
-    throw err;
-  }
+  await coapPut(CONFIG.espSen.resources.impactThreshold, { value });
+  log.info({ value }, "impact threshold updated");
 }
 
 export async function readTheftThreshold(): Promise<number> {
-  try {
-    const payload = await coapGet(CONFIG.espSen.resources.theftThreshold);
-    const { value } = JSON.parse(payload.toString()) as { value: number };
-    return value;
-  } catch (err) {
-    log.error({ err }, "Failed to read theft threshold");
-    throw err;
-  }
+  const payload = await coapGet(CONFIG.espSen.resources.theftThreshold);
+  return (JSON.parse(payload.toString()) as { value: number }).value;
 }
 
 export async function writeTheftThreshold(value: number): Promise<void> {
   try {
     await coapPut(CONFIG.espSen.resources.theftThreshold, { value });
-    log.info({ value }, "Theft threshold updated");
   } catch (err) {
-    log.error({ err }, "Failed to write theft threshold");
+    log.error(err, "theft threshold write failed");
     throw err;
   }
 }

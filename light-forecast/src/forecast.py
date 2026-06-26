@@ -7,7 +7,7 @@ import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.stattools import adfuller
 
-# statsmodels gets noisy on short / non-stationary series
+# statsmodels is noisy on short series
 warnings.filterwarnings("ignore")
 log = logging.getLogger("forecast")
 
@@ -19,13 +19,13 @@ ARIMA_P = 1
 ARIMA_Q = 1
 MIN_SAMPLES = 10
 
-# put the readings on a fixed grid and patch small gaps
+# resample onto a fixed grid, ffill small gaps
 def _resample(series: pd.Series):
     grid = series.resample(f"{RESAMPLE_S}s").mean()
     return grid.ffill().dropna()
 
 
-# keep differencing until the ADF test calls it stationary
+# difference until ADF says stationary
 def _determine_d(series: pd.Series):
     d = 0
     current = series
