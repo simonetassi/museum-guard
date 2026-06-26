@@ -8,7 +8,6 @@ export const CONFIG = {
   espSen: {
     host: process.env.ESP_SEN_HOST || "192.168.1.101",
     coapPort: Number(process.env.ESP_SEN_COAP_PORT) || 5683,
-    pollingIntervalMs: Number(process.env.ESP_SEN_POLLING_INTERVAL_MS) || 2000,
     resources: {
       ambientLight: process.env.ESP_SEN_RES_AMBIENT_LIGHT || "/sensor/light",
       acceleration: process.env.ESP_SEN_RES_ACCELERATION || "/sensor/acceleration",
