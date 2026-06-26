@@ -3,13 +3,13 @@ export const ACTUATOR_TD: Record<string, unknown> = {
   id: "urn:museumguard:actuator",
   title: "museumguard-actuator",
   description: "ESP-ACT actuation node: variable LED and alarm LED",
-  // securityDefinitions: { nosec_sc: { scheme: "nosec" } },
-  // security: ["nosec_sc"],
+  securityDefinitions: { nosec_sc: { scheme: "nosec" } },
+  security: ["nosec_sc"],
 
   properties: {
     variableLedIntensity: {
       type: "object",
-      readOnly: false,
+      readOnly: true,
       observable: true,
       description: "Current artwork illumination intensity with timestamp",
       properties: {

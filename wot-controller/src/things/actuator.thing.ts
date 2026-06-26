@@ -12,19 +12,10 @@ const action = (fn: () => Promise<void>): WoT.ActionHandler =>
 export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.ExposedThing> {
   const thing = await wot.produce(ACTUATOR_TD as WoT.ExposedThingInit);
 
-  let variableLedIntensity = 0;
-  let variableLedTimestamp = new Date().toISOString();
-
-  const setVariableLedIntensity = (v: number) => {
-    variableLedIntensity = v;
-    variableLedTimestamp = new Date().toISOString();
-    thing.emitPropertyChange("variableLedIntensity");
-  };
-
-  thing.setPropertyReadHandler("variableLedIntensity", async () => ({
-    value: variableLedIntensity,
-    timestamp: variableLedTimestamp,
-  }));
+  thing.setPropertyReadHandler("variableLedIntensity", async () => {
+    const state = await getActuatorState();
+    return { value: state.variableLedIntensity, timestamp: state.timestamp };
+  });
 
   thing.setPropertyReadHandler("fixedLedState", async () => {
     const state = await getActuatorState();
@@ -34,7 +25,7 @@ export async function produceActuatorThing(wot: typeof WoT): Promise<WoT.Exposed
   thing.setActionHandler("setLightingIntensity", async (params) => {
     const intensity = await params.value() as number;
     await setIntensity(intensity);
-    setVariableLedIntensity(intensity);
+    thing.emitPropertyChange("variableLedIntensity");
     return undefined;
   });
 
