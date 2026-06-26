@@ -15,18 +15,20 @@ const MIN_INTENSITY = 0;
 export function startSensorPoller(): void {
   pollingInterval = setInterval(async () => {
     let lux: number | null = null;
+    let luxTime: Date | null = null;
 
     try {
       const lightRaw = await getSensor().readProperty("ambientLight");
       const { value, timestamp } = await lightRaw.value() as { value: number; timestamp: string };
       lux = value;
-      await writeLightMeasurement(lux, new Date(timestamp));
+      luxTime = new Date(timestamp);
+      await writeLightMeasurement(lux, luxTime);
       log.info({ lux }, "ambient light written");
     } catch (err) {
       log.error(err, "failed to read/write ambient light");
     }
 
-    if (lux !== null) {
+    if (lux !== null && luxTime !== null) {
       try {
         const fixedLedStateRaw = await getActuator().readProperty("fixedLedState");
         const { value: fixedLedState, timestamp: ledTs } = await fixedLedStateRaw.value() as { value: string; timestamp: string };
@@ -38,7 +40,7 @@ export function startSensorPoller(): void {
             const predicted = await getPredictedLux(CONFIG.forecast.horizonS);
             if (predicted !== null) {
               controlLux = predicted;
-              const targetTs = new Date(Date.now() + CONFIG.forecast.horizonS * 1000);
+              const targetTs = new Date(luxTime.getTime() + CONFIG.forecast.horizonS * 1000);
               await writeForecast(predicted, targetTs);
             }
           }
