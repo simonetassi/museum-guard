@@ -41,7 +41,7 @@ static QueueHandle_t s_cmd_queue;
 static SemaphoreHandle_t s_state_mutex;
 static actuator_state_t s_state;
 
-/* PWM LED */
+// PWM LED
 static void configure_pwm_led(void) {
   ledc_timer_config_t timer_config = {
       .speed_mode      = PWM_MODE,
@@ -75,7 +75,7 @@ static void apply_intensity(uint8_t percent) {
            PWM_LED_GPIO, percent, (unsigned long)duty);
 }
 
-/* FIXED LED */
+// FIXED LED
 static void configure_fixed_led(void) {
   gpio_reset_pin(FIXED_LED_GPIO);
   gpio_set_direction(FIXED_LED_GPIO, GPIO_MODE_OUTPUT);
@@ -86,7 +86,7 @@ static void set_fixed_led(uint8_t on) {
   gpio_set_level(FIXED_LED_GPIO, on ? 1 : 0);
 }
 
-/* PUBLISH STATE */
+// PUBLISH STATE
 static void publish_intensity(uint8_t percent) {
   xSemaphoreTake(s_state_mutex, portMAX_DELAY);
   s_state.variable_led_intensity = percent;
@@ -99,7 +99,7 @@ static void publish_fixed_state(fixed_led_state_t state) {
   xSemaphoreGive(s_state_mutex);
 }
 
-/* RTOS TASK */
+// RTOS TASK
 static void control_task(void *arg) {
   (void)arg; // drop null arg - avoid compiler warn
   actuator_cmd_t cmd;
@@ -162,7 +162,7 @@ static void control_task(void *arg) {
   }
 }
 
-/* PUBLIC FUNCTIONS */
+// PUBLIC FUNCTIONS
 
 esp_err_t actuator_init(void) {
   configure_pwm_led();

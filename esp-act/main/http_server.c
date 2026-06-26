@@ -27,7 +27,7 @@ static int read_body(httpd_req_t *req, char *buf, size_t buf_size) {
   return received;
 }
 
-/* GET /actuator/state */
+// GET /actuator/state
 static esp_err_t get_state_handler(httpd_req_t *req) {
   actuator_state_t st; 
   actuator_get_state(&st);
@@ -53,7 +53,7 @@ static esp_err_t get_state_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-/* POST /actuator/intensity */
+// POST /actuator/intensity
 static esp_err_t post_intensity_handler(httpd_req_t *req) {
   char body[MAX_BODY_LEN];
   if (read_body(req, body, sizeof(body)) < 0) {
@@ -88,7 +88,7 @@ static esp_err_t post_intensity_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-/* POST /actuator/blink */
+// POST /actuator/blink
 static esp_err_t post_blink_handler(httpd_req_t *req) {
   if (actuator_start_blink() != ESP_OK) {
     httpd_resp_send_500(req);
@@ -100,7 +100,7 @@ static esp_err_t post_blink_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-/* POST /actuator/alarm */
+// POST /actuator/alarm
 static esp_err_t post_alarm_handler(httpd_req_t *req)
 {
   if (actuator_activate_alarm() != ESP_OK) {
@@ -113,7 +113,7 @@ static esp_err_t post_alarm_handler(httpd_req_t *req)
   return ESP_OK;
 } 
 
-/* POST /actuator/reset */
+// POST /actuator/reset
 static esp_err_t post_reset_handler(httpd_req_t *req)
 {
   if (actuator_reset() != ESP_OK) {
