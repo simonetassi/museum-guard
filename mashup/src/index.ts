@@ -6,7 +6,7 @@ import { startSensorPoller, stopSensorPoller } from "./collection/sensorPoller";
 import pino from "pino";
 import { startEventHandler, stopEventHandler } from "./control/eventHandler";
 
-const log = pino({ name: "sensorPoller" });
+const log = pino({ name: "mashup" });
 
 async function main(): Promise<void> {
   const servient = new Servient();
