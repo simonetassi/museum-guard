@@ -10,12 +10,6 @@ log = logging.getLogger("main")
 
 app = FastAPI(title="light-forecast")
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
 @app.get("/forecast")
 def forecast(horizon_s: int = HORIZON_S):
     try:
