@@ -1,6 +1,6 @@
 import Servient from "@node-wot/core";
-import { getSensor, initConsumer } from "./consumer";
 import { HttpClientFactory } from "@node-wot/binding-http";
+import { CONFIG } from "./config";
 import { notifyTelegram } from "./notifier";
 import pino from "pino";
 
@@ -12,8 +12,8 @@ async function main(): Promise<void> {
 
   const wot = await servient.start()
 
-  await initConsumer(wot);
-  const sensor = getSensor();
+  const sensorTD = await wot.requestThingDescription(CONFIG.sensor.tdUrl);
+  const sensor = await wot.consume(sensorTD);
 
   const impactSub = await sensor.subscribeEvent("impactDetected", async (data) => {
     const { value, timestamp } = await data.value() as { value: number; timestamp: string };
