@@ -29,8 +29,8 @@ static const char *TAG = "sensor";
 #define MPU6050_I2C_FREQ_HZ 400000
 #define G_TO_MS2 9.80665f
 
-#define DEFAULT_IMPACT_THRESHOLD 25.0f
-#define DEFAULT_THEFT_THRESHOLD 12.0f
+#define DEFAULT_IMPACT_THRESHOLD 20.0f
+#define DEFAULT_THEFT_THRESHOLD 4.0f
 
 #define SAMPLE_PERIOD_MS 50
 #define LIGHT_EVERY_N 20 // 20 * 50ms -> read light every 1s
@@ -79,11 +79,11 @@ float sensor_get_light(void) {
 
 static esp_err_t i2c_bus_init(void) {
   i2c_config_t conf = {
-    .mode             = I2C_MODE_MASTER,
-    .sda_io_num       = MPU6050_SDA_GPIO,
-    .scl_io_num       = MPU6050_SCL_GPIO,
-    .sda_pullup_en    = true,
-    .scl_pullup_en    = true,
+    .mode = I2C_MODE_MASTER,
+    .sda_io_num = MPU6050_SDA_GPIO,
+    .scl_io_num = MPU6050_SCL_GPIO,
+    .sda_pullup_en = true,
+    .scl_pullup_en = true,
     .master.clk_speed = MPU6050_I2C_FREQ_HZ,
   };
   esp_err_t err = i2c_param_config(MPU6050_I2C_PORT, &conf);
@@ -101,9 +101,11 @@ static esp_err_t read_acceleration(acceleration_t *out) {
     return err;
   }
 
-  out->x = acce.acce_x * G_TO_MS2;
-  out->y = acce.acce_y * G_TO_MS2;
-  out->z = acce.acce_z * G_TO_MS2;
+  // the MPU6050 is mounted rotated
+  // normalize here so that every layer above can assume the standard convention
+  out->z = acce.acce_x * G_TO_MS2;
+  out->x = acce.acce_y * G_TO_MS2;
+  out->y = acce.acce_z * G_TO_MS2;
   return ESP_OK;
 }
 
@@ -230,8 +232,8 @@ esp_err_t sensor_init(void) {
   ESP_ERROR_CHECK(adc_oneshot_new_unit(&unit_cfg, &s_adc));
 
   adc_oneshot_chan_cfg_t chan_cfg = {
-      .atten    = LIGHT_ADC_ATTEN,
-      .bitwidth = ADC_BITWIDTH_DEFAULT,
+    .atten = LIGHT_ADC_ATTEN,
+    .bitwidth = ADC_BITWIDTH_DEFAULT,
   };
   ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, LIGHT_ADC_CHANNEL, &chan_cfg));
 

@@ -44,22 +44,22 @@ static actuator_state_t s_state;
 // PWM LED
 static void configure_pwm_led(void) {
   ledc_timer_config_t timer_config = {
-      .speed_mode      = PWM_MODE,
-      .timer_num       = PWM_TIMER,
-      .duty_resolution = PWM_RESOLUTION,
-      .freq_hz         = PWM_FREQ_HZ,
-      .clk_cfg         = LEDC_AUTO_CLK,
+    .speed_mode = PWM_MODE,
+    .timer_num = PWM_TIMER,
+    .duty_resolution = PWM_RESOLUTION,
+    .freq_hz = PWM_FREQ_HZ,
+    .clk_cfg = LEDC_AUTO_CLK,
   };
   ESP_ERROR_CHECK(ledc_timer_config(&timer_config));
 
   ledc_channel_config_t channel_config = {
-      .speed_mode = PWM_MODE,
-      .channel    = PWM_CHANNEL,
-      .timer_sel  = PWM_TIMER,
-      .intr_type  = LEDC_INTR_DISABLE,
-      .gpio_num   = PWM_LED_GPIO,
-      .duty       = 0,
-      .hpoint     = 0,
+    .speed_mode = PWM_MODE,
+    .channel = PWM_CHANNEL,
+    .timer_sel = PWM_TIMER,
+    .intr_type = LEDC_INTR_DISABLE,
+    .gpio_num = PWM_LED_GPIO,
+    .duty = 0,
+    .hpoint = 0,
   };
   ESP_ERROR_CHECK(ledc_channel_config(&channel_config));
 }
