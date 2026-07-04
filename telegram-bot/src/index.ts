@@ -28,7 +28,7 @@ async function main(): Promise<void> {
   });
 
   process.on("SIGINT", async () => {
-    log.info("Shutting down...");
+    log.info("Shutting down");
     impactSub.stop();
     theftSub.stop();
     await servient.shutdown();
@@ -37,6 +37,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  log.error(err, "Fatal error during startup");
+  log.error(err, "Error during startup");
   process.exit(1);
 });

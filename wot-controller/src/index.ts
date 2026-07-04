@@ -22,7 +22,7 @@ async function main(): Promise<void> {
   log.info(`Actuator TD: http://localhost:${port}/museumguard-actuator`);
 
   process.on("SIGINT", async () => {
-    log.info("Shutting down...");
+    log.info("Shutting down");
     stopSensorThing();
     await servient.shutdown();
     log.info("Controller shut down.");

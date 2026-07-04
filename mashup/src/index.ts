@@ -24,7 +24,7 @@ async function main(): Promise<void> {
   await startEventHandler();
 
   process.on("SIGINT", async () => {
-    log.info("Shutting down...");
+    log.info("Shutting down");
     stopSensorPoller();
     stopEventHandler();
     closeInfluxWriter();
@@ -35,6 +35,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  log.error(err, "Fatal error during startup");
+  log.error(err, "Error during startup");
   process.exit(1);
 });
