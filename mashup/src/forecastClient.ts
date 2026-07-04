@@ -1,4 +1,4 @@
-import { CONFIG } from "../config";
+import { CONFIG } from "./config";
 import pino from "pino";
 
 const log = pino({ name: "forecastClient" });

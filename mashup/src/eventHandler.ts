@@ -1,8 +1,8 @@
 import pino from "pino";
 import * as WoT from "wot-typescript-definitions";
-import { getActuator, getSensor } from "../wot/consumer";
-import { writeEvent } from "../storage/influxWriter";
-import { EventType } from "../common/types";
+import { getActuator, getSensor } from "./consumer";
+import { writeEvent } from "./influxWriter";
+import { EventType } from "./types";
 
 const log = pino({ name: "eventHandler" });
 

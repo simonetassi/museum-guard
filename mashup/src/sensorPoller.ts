@@ -1,7 +1,7 @@
-import { CONFIG } from "../config";
-import { writeAcceleration, writeFixedLedState, writeForecast, writeLightingIntensity, writeLightMeasurement } from "../storage/influxWriter";
-import { getActuator, getSensor } from "../wot/consumer";
-import { getPredictedLux } from "../forecast/forecastClient";
+import { CONFIG } from "./config";
+import { writeAcceleration, writeFixedLedState, writeForecast, writeLightingIntensity, writeLightMeasurement } from "./influxWriter";
+import { getActuator, getSensor } from "./consumer";
+import { getPredictedLux } from "./forecastClient";
 import pino from "pino";
 
 const log = pino({ name: "sensorPoller" });

@@ -1,10 +1,10 @@
 import Servient from "@node-wot/core";
-import { initConsumer } from "./wot/consumer";
+import { initConsumer } from "./consumer";
 import { HttpClientFactory } from "@node-wot/binding-http";
-import { closeInfluxWriter, initInflux } from "./storage/influxWriter";
-import { startSensorPoller, stopSensorPoller } from "./collection/sensorPoller";
+import { closeInfluxWriter, initInflux } from "./influxWriter";
+import { startSensorPoller, stopSensorPoller } from "./sensorPoller";
 import pino from "pino";
-import { startEventHandler, stopEventHandler } from "./control/eventHandler";
+import { startEventHandler, stopEventHandler } from "./eventHandler";
 
 const log = pino({ name: "mashup" });
 

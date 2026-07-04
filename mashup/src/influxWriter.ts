@@ -1,5 +1,5 @@
-import { EventType } from "../common/types";
-import { CONFIG } from "../config"
+import { EventType } from "./types";
+import { CONFIG } from "./config"
 import {InfluxDBClient, Point} from "@influxdata/influxdb3-client"
 
 let client: InfluxDBClient;

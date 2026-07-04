@@ -1,5 +1,5 @@
 import * as WoT from "wot-typescript-definitions";
-import { CONFIG } from "../config";
+import { CONFIG } from "./config";
 
 let consumedSensor: WoT.ConsumedThing;
 let consumedActuator: WoT.ConsumedThing;
