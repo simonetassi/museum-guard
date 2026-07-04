@@ -47,7 +47,7 @@
       "title": "Acceleration X / Y / Z (m/s²)",
       "type": "timeseries",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
       "fieldConfig": { "defaults": { "unit": "accMS2", "custom": { "drawStyle": "line", "fillOpacity": 0 } }, "overrides": [] },
       "targets": [
         {
@@ -60,15 +60,14 @@
     },
     {
       "id": 4,
-      "title": "Theft signal: |Z − g| vs threshold",
+      "title": "Theft signal: |Z − g| (vertical deviation)",
       "type": "timeseries",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "fieldConfig": {
         "defaults": {
           "unit": "accMS2",
-          "custom": { "drawStyle": "line", "fillOpacity": 10, "thresholdsStyle": { "mode": "line" } },
-          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "green" }, { "value": 12, "color": "red" } ] }
+          "custom": { "drawStyle": "line", "fillOpacity": 10 }
         },
         "overrides": []
       },
@@ -76,7 +75,7 @@
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-          "rawSql": "SELECT time, abs(z - 9.80665) AS vertical_deviation FROM acceleration WHERE $__timeFilter(time) ORDER BY time",
+          "rawSql": "SELECT time, abs(z - 9.80665) AS vertical_deviation FROM acceleration WHERE $__timeFilter(time) UNION ALL SELECT time, value AS vertical_deviation FROM theft_event WHERE $__timeFilter(time) ORDER BY time",
           "format": "time_series"
         }
       ]
@@ -86,7 +85,7 @@
       "title": "Security events",
       "type": "table",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
       "targets": [
         {
           "refId": "A",
@@ -101,7 +100,7 @@
       "title": "Fixed LED / alarm state",
       "type": "state-timeline",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
       "fieldConfig": {
         "defaults": {
           "custom": { "fillOpacity": 80 },
@@ -125,7 +124,7 @@
       "title": "Impacts (range)",
       "type": "stat",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 24 },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 32 },
       "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" } }, "overrides": [] },
       "targets": [
         {
@@ -141,7 +140,7 @@
       "title": "Thefts (range)",
       "type": "stat",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 24 },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 32 },
       "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] },
       "targets": [
         {
@@ -157,7 +156,7 @@
       "title": "Latest light",
       "type": "stat",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 24 },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 32 },
       "fieldConfig": { "defaults": { "unit": "lux", "color": { "mode": "thresholds" } }, "overrides": [] },
       "targets": [
         {
@@ -173,7 +172,7 @@
       "title": "Current alarm state",
       "type": "stat",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 24 },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 32 },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "text" },
@@ -203,7 +202,7 @@
       "title": "Ambient light: actual vs ARIMA forecast",
       "type": "timeseries",
       "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
       "fieldConfig": {
         "defaults": { "unit": "lux", "custom": { "drawStyle": "line", "fillOpacity": 10 } },
         "overrides": [
@@ -221,6 +220,22 @@
           "refId": "B",
           "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
           "rawSql": "SELECT time, lux AS forecast FROM ambient_light_forecast WHERE $__timeFilter(time) ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Impact signal: |ΔX| (longitudinal jerk)",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "accMS2", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "museumguard-influxdb" },
+          "rawSql": "SELECT time, jerk FROM (SELECT time, abs(x - lag(x) OVER (ORDER BY time)) AS jerk FROM acceleration WHERE $__timeFilter(time)) t UNION ALL SELECT time, value AS jerk FROM impact_event WHERE $__timeFilter(time) ORDER BY time",
           "format": "time_series"
         }
       ]
