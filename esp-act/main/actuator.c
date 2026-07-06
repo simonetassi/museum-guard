@@ -101,7 +101,6 @@ static void publish_fixed_state(fixed_led_state_t state) {
 
 // RTOS TASK
 static void control_task(void *arg) {
-  (void)arg; // drop null arg - avoid compiler warn
   actuator_cmd_t cmd;
   bool blinking = false;
   bool theft_latched = false;

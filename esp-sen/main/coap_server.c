@@ -182,7 +182,6 @@ static coap_resource_t *register_resource(const char *uri, int observable,
 }
 
 static void coap_task(void *arg) {
-  (void)arg;
   QueueHandle_t queue = sensor_event_queue();
 
   for (;;) {

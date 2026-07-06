@@ -160,7 +160,6 @@ static void emit_event(sensor_event_type_t type, float value) {
 }
 
 static void sensor_task(void *arg) {
-  (void)arg;
   acceleration_t acc = { 0 };
   float prev_ax = 0.0f;
   bool have_prev = false;
